@@ -1,0 +1,242 @@
+const STORE = {
+    currentQuestionIndex: 0,
+    score: 0,
+    questionsArr: [{
+            text: 'What year was the first Academy Awards ceremony held?',
+            answers: [
+                '1924',
+                '1929', //correct 1.
+                '1935',
+                '1941',
+            ],
+            correctAnswerIndex: 1,
+
+        },
+        {
+            text: ' What organization is responsible for the Academy Awards? ',
+            answers: [
+                'screen actors guild',
+                'American Film Institute',
+                'Academy of Motion Pictures Arts and sciences', //corrct 2.
+                'American academy of stage and Screen',
+            ],
+            correctAnswerIndex: 2
+        }, {
+            text: 'What two actresses tied for Best Actress at the 1968 Academy Awards?',
+            answers: [
+                'joann woodward and vanessa Redgrave',
+                'Liza Minnelli and Genevieve Bujold',
+                'Katharine Hepburn and Barbara Streisand', //correct 3.
+                'Anne Bancroft  and Gaudry Hepburn',
+
+            ],
+            correctAnswerIndex: 2,
+            correctAnswer: '1968 KATHARINE HEPBURN and BARBRA STREISAND tie',
+
+        },
+        {
+            text: 'Who hosted or co-hosted the Academy Awards 18 times during his career?',
+
+            answers: [
+                'Billy Crystal',
+                'Bob Hope', //corrct 4.
+                'Johnny Carson',
+                'AWhoopie Goldberg',
+            ],
+            correctAnswerIndex: 1,
+            correctAnswer: 'Bob Hope'
+        },
+
+        {
+            text: 'What was the first film to win Academy Awards for Best PictureBest DirectorBest ActorBest Actress-and Best Screenplay?',
+
+
+            answers: [
+                'One flew over the cuckoo nest',
+                'Gone with the wind',
+                'It Happened one night',
+                'Silence of the lambs',
+            ],
+            correctAnswerIndex: 2,
+            correctAnswer: 'It Happened One Night in 1934 was the first film to win Academy Awards in all of the following categories:',
+
+            //'Best Director Frank Capra',
+            //Best Actor Clark Gable Best Actress Claudette Colbert and Best Screenplay Robert Riskin',//
+            // 'Other films to later match this remarkable achievement'// 
+            //'One Flew Over the Cuckoo's Nest in 1995'//
+            //'and The Silence of the Lambs in 1991',//
+
+
+        },
+        {
+            text: 'What two films have the most Academy Award nominations?',
+
+            answers: [
+
+                'All About Eve and Gone With the Wind',
+                'Gone With The Wind and Titanic',
+                'Titanic and All About Eve', //correct 6
+                'Shakespeare in Love and Forest Gump',
+            ],
+            correctAnswerIndex: 2,
+            correctAnswer: 'Both Titanic and All About Eve have 14 Oscar nominations',
+        },
+        {
+            text: 'Who has won the most directing Academy Awards?',
+
+            answers: [
+                'Frank Capra',
+                'Steven Spielberg',
+                'William Wyler',
+                'John Ford', //correct7
+
+            ],
+            correctAnswerIndex: 3,
+            correctAnswer: 'John Ford has won 4 Best Director Oscars for The Informer (1935), The Grapes of Wrath (1940), How Green Was My Valley (1941), and The Quiet Man (1952). He was also nominated for Stagecoach (1939). William Wyler and Frank Capra both have won 3 time',
+        },
+        {
+            text: 'Who is the only woman to win three competitive Oscars in one year?',
+
+            answers: [
+
+                'Sofia Coppola',
+                'Fran Walsh', //correct 8
+                'Meryl Streep',
+                'Edith Head',
+
+            ],
+            correctAnswerIndex: 2,
+            correctAnswer: 'Fran Walsh won three Oscars for her work on The Lord of the Rings The Return of the King Best Picture, Adapted Screenplay and Original Song',
+        },
+
+        {
+            text: 'Who has won the most Academy Awards?',
+            answers: [
+                'Meryl Streep',
+                'Jack Nicholson',
+                'Walt Disney', //correct 9
+                'Katharine Hepburn',
+            ],
+            correctAnswerIndex: 2,
+            correctAnswer: 'Walt Disney won the most Academy Awards with 22 competitive and 4 honorary',
+        },
+        {
+            text: 'Who was the first woman to win an Academy Award for Best Director?',
+            answers: [
+                'Kathryn Bigelow',
+                'Lina Wertmüller',
+                'Jane Campion',
+                'Sofia Coppola',
+            ],
+            correctAnswerIndex: 0,
+            correctAnswer: 'Kathryn Bigelow is the only woman to have won Best Director Lina Wertmuller was the first woman nominated for Seven Beauties  Jane Campion, Sofia Coppola, and Greta Gerwig the only other women to have been nominated',
+        },
+    ]
+}
+const CONTAINER = $(`.js-quiz-question`)
+const STATUS_CONTAINER = $(`#quiz-status`)
+
+function evaluateAnswer(ev) {
+
+    ev.preventDefault()
+
+    const answerIndex = $('#answer-form input:checked').val()
+
+    if (answerIndex === undefined) {
+        alert('please choose an answer!')
+        return
+    }
+    const question = getCurrentQuestion()
+    const correct = parseInt(answerIndex) === question.correctAnswerIndex
+    if (correct) {
+        STORE.score++
+    } else {
+        STORE.incorrect++
+    }
+    displayStatus()
+
+    const correctAnswerString = question.answers[question.correctAnswerIndex]
+    displayFeedback(correct, correctAnswerString)
+
+}
+
+function restartQuiz() {
+    STORE.currentQuestionIndex = 0
+    STORE.score = 0
+    STORE.incorrect = 0
+    displayCurrentQuestion()
+    displayStatus()
+}
+
+function gotoNextQuestion() {
+    // move the cursor to the next question
+    STORE.currentQuestionIndex++
+
+        if (STORE.currentQuestionIndex === STORE.questionsArr.length) {
+            displayFinalScore()
+        } else {
+            displayCurrentQuestion()
+        }
+}
+
+function displayStatus() {
+
+    STATUS_CONTAINER.text(`Q ${STORE.currentQuestionIndex + 1} of ${STORE.questionsArr.length}, ${STORE.score} correct, ${STORE.incorrect} incorrect`)
+}
+
+function displayFeedback(isCorrect, correctAnswerString) {
+    const text = isCorrect ? 'You did well!' : `Sorry, wrong answer, the correct one is "${correctAnswerString}"`
+    CONTAINER.html(`
+        <h1>${text}</h1>
+         <button class="js-next-question-button">Next</button>
+    `)
+}
+
+function displayFinalScore() {
+    STATUS_CONTAINER.text('')
+    CONTAINER.html(`
+        <h1>Your final score is: ${STORE.score}</h1>
+         <button class="js-restart-button">Restart</button>
+    `)
+}
+
+function getCurrentQuestion() {
+    return STORE.questionsArr[STORE.currentQuestionIndex]
+}
+
+function displayCurrentQuestion() {
+    const question = getCurrentQuestion()
+
+    const answersString = question.answers.map((a, index) => `
+    <label>
+    ${a}
+    <input type="radio" name="answer" value="${index}"></input>
+    </label>
+    
+    `).join(' ')
+
+
+    const htmlString = `
+    <h1>${question.text}</h1>
+    <form id="answer-form">
+        ${answersString}
+    
+    <button type="submit" class="js-evaluate-button">Submit answer</button>
+    </form>    
+        `
+    CONTAINER.html(htmlString)
+    displayStatus()
+}
+
+
+$(() => {
+    //setup next question click handler
+    CONTAINER.on('click', '.js-evaluate-button', evaluateAnswer)
+    CONTAINER.on('click', '.js-next-question-button', gotoNextQuestion)
+
+    //setup restart handler
+    CONTAINER.on('click', '.js-restart-button', restartQuiz)
+
+    //start!
+    displayCurrentQuestion()
+})
